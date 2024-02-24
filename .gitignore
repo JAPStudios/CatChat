@@ -1,0 +1,32 @@
+# Java build and runtime files
+*.class
+*.war
+*.ear
+*.jar
+
+# IntelliJ IDEA files
+.idea/
+
+# Eclipse files
+.classpath
+.project
+.settings/
+
+# NetBeans files
+nb-configuration.xml
+build/
+
+# Gradle files
+.gradle/
+build/
+
+# Maven files
+target/
+
+# Logs and other temporary files
+*.log
+*.tmp
+
+# OS-specific files
+.DS_Store
+Thumbs.db
