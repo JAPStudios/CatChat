@@ -126,3 +126,24 @@ class CatChat:
 if __name__ == "__main__":
     # Create an instance of the CatChat class to initialize the application
     app = CatChat()
+import webview
+class CatChat:
+    def __init__(self):
+        self.initialize_ui()
+    def initialize_ui(self):
+        # Assuming messenger_button is a reference to the button triggering Facebook Messenger authentication
+        # You need to bind a function to handle the button click event
+        self.messenger_button.bind("<Button-1>", self.authenticate_with_facebook_messenger)
+    def authenticate_with_facebook_messenger(self, event):
+        # When the user clicks the Facebook Messenger button, open a web view window to display the Facebook login page
+        self.webview = webview.create_window("Facebook Login", width=800, height=600, resizable=True)
+        # Replace 'https://your_redirect_uri' with the actual redirect URI of your application
+        # This URI should be registered with your Facebook app
+        facebook_auth_url = "https://www.facebook.com/v13.0/dialog/oauth?client_id=your_client_id_here&redirect_uri=https://your_redirect_uri&response_type=token&scope=pages_messaging" 
+        webview.load_url(self.webview, facebook_auth_url)
+    def on_webview_loaded(self):
+        # This function is called when the web view finishes loading
+        print("Web view has finished loading.")
+if __name__ == "__main__":
+    # Create an instance of the CatChat class to initialize the application
+    app = CatChat()
