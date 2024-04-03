@@ -332,3 +332,8 @@ class CatChat:
 if __name__ == "__main__":
     # Create an instance of the CatChat class to initialize the application
     app = CatChat()
+import webview
+import requests
+class CatChat:
+    def __init__(self):
+        self.initi
