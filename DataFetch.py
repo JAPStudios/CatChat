@@ -142,3 +142,31 @@ authorization_code = input("Enter the authorization code: ")
 token_response = authenticator.exchange_code_for_token(authorization_code)
 access_token = token_response['access_token']
 print("Access Token:", access_token)
+def retrieve_data(self, platform):
+  """
+  Retrieves chat history data from the specified platform.
+  Args:
+      platform: The name of the messaging platform (e.g., "Discord", "Facebook Messenger").
+  """
+  if platform == "Discord":
+    access_token = YOUR_DISCORD_ACCESS_TOKEN
+    print("Retrieving data from Discord...")
+  elif platform == "Facebook Messenger":
+    access_token = YOUR_FACEBOOK_ACCESS_TOKEN  
+    messenger_api = MessengerAPI(access_token)
+    user_id = "USER_ID_TO_FETCH_CHAT_DATA_FROM"
+    chat_data = messenger_api.get_chat_data(user_id)
+    if chat_data:
+        print("Processing Facebook Messenger chat data...")
+  else:
+    print(f"Unsupported platform: {platform}")
+def retrieve_data(self, platform):
+  """
+  Retrieves chat history data from the specified platform.
+  Args:
+      platform: The name of the messaging platform (e.g., "Discord", "Facebook Messenger").
+  """
+  if platform == "Discord":
+  elif platform == "Facebook Messenger":
+  else:
+    print(f"Unsupported platform: {platform}")
