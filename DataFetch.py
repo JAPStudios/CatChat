@@ -8,39 +8,6 @@ class CatChat:
         self.root = tk.Tk()
         self.root.title("CatChat")
         
-        self.discord_button = Button(self.root, text="Discord", command=self.authenticate_with_discord)
-        self.discord_button.pack()
-        
-        self.facebook_messenger_button = Button(self.root, text="Facebook Messenger", command=self.authenticate_with_facebook_messenger)
-        self.facebook_messenger_button.pack()
-        
-        self.google_chat_button = Button(self.root, text="Google Chat", command=self.authenticate_with_google_chat)
-        self.google_chat_button.pack()
-        
-        self.google_hangouts_button = Button(self.root, text="Google Hangouts", command=self.authenticate_with_google_hangouts)
-        self.google_hangouts_button.pack()
-        
-        self.instagram_button = Button(self.root, text="Instagram", command=self.authenticate_with_instagram)
-        self.instagram_button.pack()
-        
-        self.snapchat_button = Button(self.root, text="Snapchat", command=self.authenticate_with_snapchat)
-        self.snapchat_button.pack()
-        
-        self.twitter_button = Button(self.root, text="Twitter", command=self.authenticate_with_twitter)
-        self.twitter_button.pack()
-        
-        self.whatsapp_button = Button(self.root, text="WhatsApp", command=self.authenticate_with_whatsapp)
-        self.whatsapp_button.pack()
-        
-        self.youtube_button = Button(self.root, text="YouTube", command=self.authenticate_with_youtube)
-        self.youtube_button.pack()
-        
-        self.tumblr_button = Button(self.root, text="Tumblr", command=self.authenticate_with_tumblr)
-        self.tumblr_button.pack()
-        
-        self.wattpad_button = Button(self.root, text="Wattpad", command=self.authenticate_with_wattpad)
-        self.wattpad_button.pack()
-        
     def authenticate_with_discord(self):
         print("Discord authentication in progress...")
         
@@ -94,7 +61,6 @@ class MessengerAPI:
             return response.json()
         else:
             return None
-# Example usage:
 access_token = "YOUR_ACCESS_TOKEN"
 messenger_api = MessengerAPI(access_token)
 user_id = "USER_ID_TO_FETCH_CHAT_DATA_FROM"
@@ -131,7 +97,6 @@ class DiscordAuthenticator:
             return response.json()
         else:
             return None
-# Example usage:
 client_id = 'YOUR_CLIENT_ID'
 client_secret = 'YOUR_CLIENT_SECRET'
 redirect_uri = 'YOUR_REDIRECT_URI'
@@ -170,3 +135,78 @@ def retrieve_data(self, platform):
   elif platform == "Facebook Messenger":
   else:
     print(f"Unsupported platform: {platform}")
+import requests
+def fetch_facebook_messages(access_token):
+    url = 'https://graph.facebook.com/me/messages'
+    params = {
+        'access_token': access_token,
+        'fields': 'messages'
+    }
+    response = requests.get(url, params=params)
+    if response.status_code == 200:
+        messages = response.json().get('messages', [])
+        return messages
+    else:
+        return []
+if __name__ == '__main__':
+    access_token = 'YOUR_FACEBOOK_ACCESS_TOKEN'
+    facebook_messages = fetch_facebook_messages(access_token)
+    print(facebook_messages)
+import requests
+def fetch_facebook_messages(access_token):
+    url = 'https://graph.facebook.com/v13.0/me/messages'
+    params = {
+        'access_token': access_token,
+        'fields': 'messages'
+    }
+    response = requests.get(url, params=params)
+    if response.status_code == 200:
+        messages = response.json().get('messages', [])
+        return messages
+    else:
+        return []
+from .DataFetch import fetch_facebook_messages
+def import_facebook_messages(request):
+    if request.method == 'POST':
+        access_token = request.POST.get('access_token')
+        messages = fetch_facebook_messages(access_token)
+        return HttpResponse('Messages imported successfully!')
+    else:
+        return HttpResponseBadRequest('Invalid request method')
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CatChat</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/static/scripts.js"></script>
+</head>
+<body>
+    <h1>Welcome to CatChat</h1>
+    <button id="import-facebook">Import from Facebook</button>
+    <!-- Add more buttons/icons for other platforms -->
+</body>
+</html>
+$(document).ready(function() {
+    $('#import-facebook').click(function() {
+        var access_token = prompt('Enter your Facebook access token:');
+        $.ajax({
+            type: 'POST',
+            url: '/import/facebook',  // URL mapped to import_facebook_messages view
+            data: { access_token: access_token },
+            success: function(response) {
+                alert('Messages imported successfully!');
+            },
+            error: function(xhr, status, error) {
+                alert('Failed to import messages. Please try again.');
+            }
+        });
+    });
+});
+from flask import Flask, request, jsonify
+app = Flask(__name__)
+@app.route('/import/facebook', methods=['POST'])
+def import_facebook_messages():
+    access_token = request.json.get('access_token')
+    return jsonify({'message': 'Messages imported successfully'})
+if __name__ == '__main__':
+    app.run(debug=True)
