@@ -285,3 +285,23 @@ class CatChat:
 if __name__ == "__main__":
     app = CatChat()
     app.run()
+import tkinter as tk
+from DataFetch import fetch_facebook_messages, fetch_twitter_messages
+class CatChat:
+    def __init__(self):
+        self.root = tk.Tk()
+        self.root.title("CatChat")
+    def import_facebook_messages(self):
+        access_token = 'YOUR_FACEBOOK_ACCESS_TOKEN'
+        messages = fetch_facebook_messages(access_token)
+    def import_twitter_messages(self):
+        api_key = 'YOUR_TWITTER_API_KEY'
+        api_secret_key = 'YOUR_TWITTER_API_SECRET_KEY'
+        access_token = 'YOUR_TWITTER_ACCESS_TOKEN'
+        access_token_secret = 'YOUR_TWITTER_ACCESS_TOKEN_SECRET'
+        messages = fetch_twitter_messages(api_key, api_secret_key, access_token, access_token_secret)
+    def run(self):
+        self.root.mainloop()
+if __name__ == "__main__":
+    app = CatChat()
+    app.run()
