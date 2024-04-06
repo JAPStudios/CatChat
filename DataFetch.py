@@ -210,3 +210,32 @@ def import_facebook_messages():
     return jsonify({'message': 'Messages imported successfully'})
 if __name__ == '__main__':
     app.run(debug=True)
+import requests
+import json
+def fetch_facebook_messages(access_token):
+    url = 'https://graph.facebook.com/v12.0/me/messages'
+    headers = {'Authorization': f'Bearer {access_token}'}
+    response = requests.get(url, headers=headers)
+    data = response.json()
+def fetch_twitter_messages(api_key, api_secret_key, access_token, access_token_secret):
+    url = 'https://api.twitter.com/2/direct_messages'
+    headers = {
+        'Authorization': f'Bearer {access_token}',
+        'Content-Type': 'application/json'
+    }
+    response = requests.get(url, headers=headers)
+    data = response.json()
+import tkinter as tk
+from DataFetch import fetch_facebook_messages, fetch_twitter_messages
+def import_facebook_messages():
+    access_token = 'YOUR_FACEBOOK_ACCESS_TOKEN'
+    messages = fetch_facebook_messages(access_token)
+def import_twitter_messages():
+    api_key = 'YOUR_TWITTER_API_KEY'
+    api_secret_key = 'YOUR_TWITTER_API_SECRET_KEY'
+    access_token = 'YOUR_TWITTER_ACCESS_TOKEN'
+    access_token_secret = 'YOUR_TWITTER_ACCESS_TOKEN_SECRET'
+    messages = fetch_twitter_messages(api_key, api_secret_key, access_token, access_token_secret)
+root = tk.Tk()
+root.title("CatChat")
+root.mainloop()
