@@ -1,6 +1,6 @@
 import requests
 def import_facebook_messages(access_token):
-    url = "https://graph.facebook.com/v12.0/me/messages"
+    url = "https://graph.facebook.com/v13.0/me/messages"
     headers = {"Authorization": f"Bearer {access_token}"}
     response = requests.get(url, headers=headers)
     
