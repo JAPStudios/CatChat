@@ -1,3 +1,26 @@
+import requests
+def fetch_messages_from_platform(access_token):
+    url = "https://api.example.com/messages"
+    headers = {
+        "Authorization": f"Bearer {access_token}",
+        "Content-Type": "application/json"
+    }
+    
+    try:
+        response = requests.get(url, headers=headers)
+        response.raise_for_status()  # Raise an exception for non-2xx status codes
+        
+        messages = response.json()
+        return messages
+    
+    except requests.exceptions.RequestException as e:
+        print(f"Error fetching messages: {e}")
+        return None
+platform_access_token = "your_platform_access_token_here"
+messages = fetch_messages_from_platform(platform_access_token)
+if messages:
+    for message in messages:
+        print(message)  
 import discord
 import tweepy
 import requests
