@@ -305,3 +305,16 @@ class CatChat:
 if __name__ == "__main__":
     app = CatChat()
     app.run()
+const axios = require('axios');
+const platformEndpoint = 'https://api.facebook.com/messages';
+const userAccessToken = 'YOUR_ACCESS_TOKEN';
+axios.get(platformEndpoint, {
+  headers: {
+    Authorization: `Bearer ${userAccessToken}`
+  }
+}).then(response => {
+  const chatData = response.data;
+  console.log(chatData);
+}).catch(error => {
+  console.error('Error fetching chat data:', error);
+});
