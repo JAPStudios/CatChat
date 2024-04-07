@@ -318,3 +318,21 @@ axios.get(platformEndpoint, {
 }).catch(error => {
   console.error('Error fetching chat data:', error);
 });
+import requests
+class MessengerAPI:
+    def __init__(self, access_token):
+        self.access_token = access_token
+    
+    def get_chat_data(self, user_id):
+        url = f"https://graph.facebook.com/{user_id}/messages"
+        headers = {"Authorization": f"Bearer {self.access_token}"}
+        response = requests.get(url, headers=headers)
+        if response.status_code == 200:
+            return response.json()
+        else:
+            return None
+access_token = "YOUR_FACEBOOK_ACCESS_TOKEN"
+messenger_api = MessengerAPI(access_token)
+user_id = "USER_ID_TO_FETCH_CHAT_DATA_FROM"
+chat_data = messenger_api.get_chat_data(user_id)
+print(chat_data)
