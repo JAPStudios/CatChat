@@ -1,3 +1,44 @@
+import discord
+class DiscordClient:
+    def __init__(self, bot_token):
+        self.bot_token = bot_token
+        self.client = discord.Client()
+    async def fetch_messages(self, channel_id):
+        await self.client.start(self.bot_token)
+        channel = self.client.get_channel(channel_id)
+        messages = await channel.history(limit=None).flatten()
+        await self.client.close()
+        return messages
+import requests
+class FacebookMessenger:
+    def __init__(self, access_token):
+        self.access_token = access_token
+    
+    def fetch_messages(self, user_id):
+        url = f"https://graph.facebook.com/{user_id}/messages"
+        headers = {"Authorization": f"Bearer {self.access_token}"}
+        response = requests.get(url, headers=headers)
+        if response.status_code == 200:
+            return response.json()['data']
+        else:
+            return None
+import tweepy
+class TwitterDMs:
+    def __init__(self, consumer_key, consumer_secret, access_token, access_token_secret):
+        auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
+        auth.set_access_token(access_token, access_token_secret)
+        self.api = tweepy.API(auth)
+    
+    def fetch_messages(self):
+        messages = []
+        for message in self.api.list_direct_messages():
+            messages.append({
+                'sender_id': message.message_create['sender_id'],
+                'recipient_id': message.message_create['target']['recipient_id'],
+                'text': message.message_create['message_data']['text'],
+                'timestamp': message.created_timestamp
+            })
+        return messages
 import requests
 import datetime
 class FacebookMessenger:
