@@ -336,3 +336,86 @@ messenger_api = MessengerAPI(access_token)
 user_id = "USER_ID_TO_FETCH_CHAT_DATA_FROM"
 chat_data = messenger_api.get_chat_data(user_id)
 print(chat_data)
+import tkinter as tk
+from DataFetch import MessengerAPI
+class CatChat:
+    def __init__(self):
+        self.root = tk.Tk()
+        self.root.title("CatChat")
+        
+        self.create_import_buttons()
+    
+    def create_import_buttons(self):
+        platforms = ["Facebook Messenger", "Twitter", "Discord", "Snapchat"]  
+        
+        for platform in platforms:
+            button = tk.Button(self.root, text=f"Import from {platform}", command=lambda p=platform: self.import_data(p))
+            button.pack()
+    
+    def import_data(self, platform):
+        if platform == "Facebook Messenger":
+            access_token = "YOUR_FACEBOOK_ACCESS_TOKEN"
+            messenger_api = MessengerAPI(access_token)
+            user_id = "USER_ID_TO_FETCH_CHAT_DATA_FROM"
+            chat_data = messenger_api.get_chat_data(user_id)
+            if chat_data:
+                print(f"Imported {platform} chat data:", chat_data)
+        elif platform == "Twitter":
+            pass
+        elif platform == "Discord":
+            pass
+        elif platform == "Snapchat":
+            pass
+    
+    def run(self):
+        self.root.mainloop()
+if __name__ == "__main__":
+    app = CatChat()
+    app.run()
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CatChat</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#import-facebook').click(function() {
+                var access_token = prompt('Enter your Facebook access token:');
+                $.ajax({
+                    type: 'POST',
+                    url: '/import/facebook',
+                    data: { access_token: access_token },
+                    success: function(response) {
+                        alert('Messages imported successfully!');
+                    },
+                    error: function(xhr, status, error) {
+                        alert('Failed to import messages. Please try again.');
+                    }
+                });
+            });
+        });
+    </script>
+</head>
+<body>
+    <h1>Welcome to CatChat</h1>
+    <button id="import-facebook">Import from Facebook</button>
+    <!-- Add more buttons/icons for other platforms -->
+</body>
+</html>
+import requests
+def get_discord_messages(access_token):
+    api_url = 'https://discord.com/api/v9/channels/CHANNEL_ID/messages'
+    headers = {'Authorization': f'Bearer {access_token}'}
+    
+    response = requests.get(api_url, headers=headers)
+    if response.status_code == 200:
+        messages = response.json()
+        return messages
+    else:
+        return None
+access_token = 'YOUR_DISCORD_ACCESS_TOKEN'
+messages = get_discord_messages(access_token)
+if messages:
+    print(messages)
+else:
+    print("Failed to retrieve Discord messages.")
