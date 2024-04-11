@@ -40,6 +40,8 @@ class Messenger:
             return response.json()['data']
         else:
             return None
+class MMS:
+class SMS:
 class Snapchat:
 class TikTok:
 class Twitter:
