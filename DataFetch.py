@@ -27,7 +27,7 @@ class Facebook Messenger:
     def __init__(self, access_token):
         self.access_token = access_token
     def fetch_messages(self, user_id):
-        url = f"https://graph.facebook.com/{user_id}/messages"
+        url = f"https://www.facebook.com"
         headers = {"Authorization": f"Bearer {self.access_token}"}
         response = requests.get(url, headers=headers)
         if response.status_code == 200:
