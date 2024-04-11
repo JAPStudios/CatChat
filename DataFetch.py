@@ -40,6 +40,8 @@ class Messenger:
             return response.json()['data']
         else:
             return None
+class Snapchat:
+class TikTok:
 class Twitter:
     def __init__(self, consumer_key, consumer_secret, access_token, access_token_secret):
         auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
@@ -55,6 +57,7 @@ class Twitter:
                 'timestamp': message.created_timestamp
             })
         return messages
+class Wattpad:
 class WhatsApps:
 class YouTube:
 def import_messages():
