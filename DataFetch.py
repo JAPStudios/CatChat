@@ -2,7 +2,7 @@ import requests
 from datetime import datetime
 class Ancestry:
 def fetch_messages:
-    url = "https://api.example.com/messages"
+    url = "https://www.ancestry.com"
     headers = {
         "Authorization": f"Bearer {access_token}",
         "Content-Type": "application/json"
