@@ -1,6 +1,7 @@
 import requests
 from datetime import datetime
-def fetch_messages_from_platform(access_token):
+class Ancestry:
+def fetch_messages:
     url = "https://api.example.com/messages"
     headers = {
         "Authorization": f"Bearer {access_token}",
@@ -15,7 +16,6 @@ def fetch_messages_from_platform(access_token):
     except requests.exceptions.RequestException as e:
         print(f"Error fetching messages: {e}")
         return None
-class Ancestry:
 class Discord:
     def __init__(self, token):
         self.client = discord.Client()
@@ -63,27 +63,5 @@ class Twitter:
 class Wattpad:
 class WhatsApps:
 class YouTube:
-def import_messages():
-    discord_token = "YOUR_DISCORD_BOT_TOKEN"
-    discord_client = DiscordClient(discord_token)
-    discord_channel_id = "CHANNEL_ID_TO_FETCH_MESSAGES_FROM"
-    discord_messages = discord_client.fetch_messages(discord_channel_id)
-    if discord_messages:
-        print("Imported messages from Discord.")
-    facebook_access_token = "YOUR_FACEBOOK_ACCESS_TOKEN"
-    fb_messenger = FacebookMessenger(facebook_access_token)
-    fb_user_id = "USER_ID_TO_FETCH_CHAT_DATA_FROM"
-    facebook_messages = fb_messenger.fetch_messages(fb_user_id)
-    if facebook_messages:
-        print("Imported messages from Facebook.")
-    twitter_consumer_key = "YOUR_TWITTER_CONSUMER_KEY"
-    twitter_consumer_secret = "YOUR_TWITTER_CONSUMER_SECRET"
-    twitter_access_token = "YOUR_TWITTER_ACCESS_TOKEN"
-    twitter_access_token_secret = "YOUR_TWITTER_ACCESS_TOKEN_SECRET"
-    twitter_client = TwitterDMs(twitter_consumer_key, twitter_consumer_secret,
-                                twitter_access_token, twitter_access_token_secret)
-    twitter_messages = twitter_client.fetch_messages()
-    if twitter_messages:
-        print("Imported messages from Twitter.")
 if __name__ == "__main__":
     import_messages()
