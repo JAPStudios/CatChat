@@ -14,6 +14,7 @@ def fetch_messages_from_platform(access_token):
     except requests.exceptions.RequestException as e:
         print(f"Error fetching messages: {e}")
         return None
+class Ancestry:
 class Discord:
     def __init__(self, token):
         self.client = discord.Client()
@@ -25,6 +26,7 @@ class Discord:
         messages = await channel.history(limit=None).flatten()
         await self.client.close()
         return messages
+class Instagram:
 class Messenger:
     def __init__(self, access_token):
         self.access_token = access_token
