@@ -55,6 +55,7 @@ class Twitter:
                 'timestamp': message.created_timestamp
             })
         return messages
+class WhatsApps:
 class YouTube:
 def import_messages():
     discord_token = "YOUR_DISCORD_BOT_TOKEN"
