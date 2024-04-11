@@ -26,6 +26,8 @@ class Discord:
         messages = await channel.history(limit=None).flatten()
         await self.client.close()
         return messages
+class GoogleChat:
+class GoogleHangouts:
 class Instagram:
 class Messenger:
     def __init__(self, access_token):
@@ -53,6 +55,7 @@ class Twitter:
                 'timestamp': message.created_timestamp
             })
         return messages
+class YouTube:
 def import_messages():
     discord_token = "YOUR_DISCORD_BOT_TOKEN"
     discord_client = DiscordClient(discord_token)
