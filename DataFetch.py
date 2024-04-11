@@ -8,23 +8,20 @@ def fetch_messages_from_platform(access_token):
     
     try:
         response = requests.get(url, headers=headers)
-        response.raise_for_status()  
-        
+        response.raise_for_status()
         messages = response.json()
         return messages
-    
     except requests.exceptions.RequestException as e:
         print(f"Error fetching messages: {e}")
         return None
-platform_access_token = "your_platform_access_token_here"
-messages = fetch_messages_from_platform(platform_access_token)
-if messages:
-    for message in messages:
-        print(message)  
 class Discord:
-    def __init__:
+    def __init__(self, token):
         self.client = discord.Client()
-    async def fetch_messages:
+        self.token = token
+    
+    async def fetch_messages(self, channel_id):
+        await self.client.start(self.token)
+        channel = self.client.get_channel(channel_id)
         messages = await channel.history(limit=None).flatten()
         await self.client.close()
         return messages
@@ -41,7 +38,8 @@ class Messenger:
             return None
 class Twitter:
     def __init__(self, consumer_key, consumer_secret, access_token, access_token_secret):
-        auth = 
+        auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
+        auth.set_access_token(access_token, access_token_secret)
         self.api = tweepy.API(auth)
     def fetch_messages(self):
         messages = []
@@ -54,18 +52,23 @@ class Twitter:
             })
         return messages
 def import_messages():
-    discord_token = 
+    discord_token = "YOUR_DISCORD_BOT_TOKEN"
     discord_client = DiscordClient(discord_token)
-    discord_channel_id = 
+    discord_channel_id = "CHANNEL_ID_TO_FETCH_MESSAGES_FROM"
     discord_messages = discord_client.fetch_messages(discord_channel_id)
     if discord_messages:
         print("Imported messages from Discord.")
-    facebook_access_token = 
+    facebook_access_token = "YOUR_FACEBOOK_ACCESS_TOKEN"
     fb_messenger = FacebookMessenger(facebook_access_token)
-    fb_user_id = 
+    fb_user_id = "USER_ID_TO_FETCH_CHAT_DATA_FROM"
     facebook_messages = fb_messenger.fetch_messages(fb_user_id)
     if facebook_messages:
         print("Imported messages from Facebook.")
+    twitter_consumer_key = "YOUR_TWITTER_CONSUMER_KEY"
+    twitter_consumer_secret = "YOUR_TWITTER_CONSUMER_SECRET"
+    twitter_access_token = "YOUR_TWITTER_ACCESS_TOKEN"
+    twitter_access_token_secret = "YOUR_TWITTER_ACCESS_TOKEN_SECRET"
+    twitter_client = TwitterDMs(twitter_consumer_key, twitter_consumer_secret,
                                 twitter_access_token, twitter_access_token_secret)
     twitter_messages = twitter_client.fetch_messages()
     if twitter_messages:
