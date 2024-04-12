@@ -13,6 +13,9 @@ def fetch_messages:
     except requests.exceptions.RequestException as e:
         print(f"Error fetching messages: {e}")
         return None
+discordButton.setOnClickListener {
+            launchWebview("https://discord.com/login")
+        }
 class Discord:
     def __init__(self, token):
         self.client = discord.Client()
@@ -23,7 +26,10 @@ class Discord:
         messages = await channel.history(limit=None).flatten()
         await self.client.close()
         return messages
-class Facebook Messenger:
+facebookButton.setOnClickListener {
+            launchWebview("https://www.facebook.com/login")
+        }
+class FacebookMessenger:
     def __init__(self, access_token):
         self.access_token = access_token
     def fetch_messages(self, user_id):
@@ -34,8 +40,8 @@ class Facebook Messenger:
             return response.json()['data']
         else:
             return None
-class Google Chat:
-class Google Hangouts:
+class GoogleChat:
+class GoogleHangouts:
 class Instagram:
 class MMS:
 class SMS:
