@@ -1,5 +1,39 @@
 import requests
 from datetime import datetime
+import android.content.Intent
+import android.os.Bundle
+import android.webkit.WebView
+import android.webkit.WebViewClient
+import androidx.appcompat.app.AppCompatActivity
+import kotlinx.android.synthetic.main.activity_main.
+class MainActivity : AppCompatActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+        facebookButton.setOnClickListener {
+            launchWebview("https://www.facebook.com/login")
+        }
+        discordButton.setOnClickListener {
+            launchWebview("https://discord.com/login")
+        }
+    }
+    private fun launchWebview(url: String) {
+        val intent = Intent(this, WebviewActivity::class.java).apply {
+            putExtra("URL", url)
+        }
+        startActivity(intent)
+    }
+}
+class WebviewActivity : AppCompatActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_webview)
+        val webView = findViewById<WebView>(R.id.webView)
+        webView.webViewClient = WebViewClient()
+        val url = intent.getStringExtra("URL")
+        webView.loadUrl(url!!)
+    }
+}
 class Ancestry:
 def fetch_messages:
     url = "https://www.ancestry.com"
