@@ -34,7 +34,11 @@ def import_data_from_url(url):
             print(f"Error: Failed to fetch data from URL ({response.status_code})")
     except requests.RequestException as e:
         print(f"An error occurred during the request: {str(e)}")
-url = 'https://facebook.com'
+platform_urls = {
+    'discord' : 'https://discord.com',
+    'facebook': 'https://facebook.com',
+    'twitter': 'https://twitter.com'
+}
 imported_data = import_data_from_url(url)
 return f"Error: Failed to fetch data from URL ({response.status_code})"
     except requests.RequestException as e:
