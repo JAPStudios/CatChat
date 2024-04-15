@@ -1,40 +1,3 @@
-pip install fbchat discord.py
-import requests
-from datetime import datetime
-import android.content.Intent
-import android.os.Bundle
-import android.webkit.WebView
-import android.webkit.WebViewClient
-import androidx.appcompat.app.AppCompatActivity
-import kotlinx.android.synthetic.main.activity_main.
-main MainActivity: AppCompatActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        facebookButton.setOnClickListener {
-            launchWebview("https://www.facebook.com/login")
-        }
-        discordButton.setOnClickListener {
-            launchWebview("https://discord.com/login")
-        }
-    }
-    private fun launchWebview(url: String) {
-        val intent = Intent(this, WebviewActivity::class.java).apply {
-            putExtra("URL", url)
-        }
-        startActivity(intent)
-    }
-}
-def Webview: AppCompatActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_webview)
-        val webView = findViewById<WebView>(R.id.webView)
-        webView.webViewClient = WebViewClient()
-        val url = intent.getStringExtra("URL")
-        webView.loadUrl(url!!)
-    }
-}
 class Ancestry:
 def fetch_messages:
     url = "https://www.ancestry.com"
@@ -83,15 +46,15 @@ class MMS:
 class SMS:
 class Snapchat:
 class TikTok:
+class Tumblr:
 class Twitter:
     def __init__(self):
     def fetch_messages(self):
         messages = []
         for message in self.list_direct_messages():
             messages.append({
-                'sender_id': message.message['sender_id'],
-                'recipient_id': message.message['target']['recipient_id'],
-                'text': message.message['message_data']['text'],
+                'sender_id': message.message,
+                'text': message.message,
                 'timestamp': message.timestamp
             })
         return messages
