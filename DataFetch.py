@@ -1,3 +1,11 @@
+import requests
+import discord
+import fbchat
+from android.content import Intent
+from android.os import Bundle
+from android.webkit import WebView, WebViewClient
+from androidx.appcompat.app import AppCompatActivity
+from kotlinx.android.synthetic import main_activity
 class Ancestry:
 def fetch_messages:
     url = "https://www.ancestry.com"
@@ -11,10 +19,14 @@ def fetch_messages:
     except requests.exceptions.RequestException as e:
         print(f"Error fetching messages: {e}")
         return None
-discordButton.setOnClickListener {
-            launchWebview("https://discord.com/login")
-        }
+for message in messages:
+    message_content = message.text
+    sender_name = message.author.name
+try:
+except Exception as e:
+    print(f"An error occurred: {str(e)}")
 class Discord:
+discordButton.setOnClickListener
     def __init__(self, token):
         self.client = discord.Client()
         self.token = token
@@ -61,9 +73,3 @@ class Twitter:
 class Wattpad:
 class WhatsApp:
 class YouTube:
-for message in messages:
-    message_content = message.text
-    sender_name = message.author.name
-try:
-except Exception as e:
-    print(f"An error occurred: {str(e)}")
