@@ -7,15 +7,13 @@ from android.webkit import WebView, WebViewClient
 from androidx.appcompat.app import AppCompatActivity
 from kotlinx.android.synthetic import main_activity
 class Ancestry:
-*ChatGPT is refusing to write this section*
-This section appears to be incomplete. If you're integrating with Ancestry's API to fetch messages, you'll need to define methods for authentication and message retrieval.
+You'll need to integrate the authentication flow using a WebView to prompt users for login and permission granting. Implement the fetch_messages method to retrieve messages from specific threads using fbchat.Client.
+Define methods for authentication and message retrieval from Ancestry's API.
 class Discord:
-*ChatGPT is refusing to write this section*
-Implement methods for handling Discord's API authentication and message retrieval. This includes initializing a Discord client with a token and fetching messages from specific channels.
+You'll need to integrate the authentication flow using a WebView to prompt users for login and permission granting. Implement the fetch_messages method to retrieve messages from specific threads using fbchat.Client.
+Implement methods to handle Discord's API authentication and message retrieval from specific channels.
 class FacebookMessenger:
-*ChatGPT is refusing to write the part that actually activates the code after it detected that messenger icon was clicked on page*
-*ChatGPT is refusing to write webview opening in application to authenticate the account so the system knows what the target is and that the user owns it*
-Ensure that this class initializes an instance of the fbchat.Client with appropriate credentials (email, password) for authentication.Implement a method (fetch_messages) to retrieve messages from a specific thread (user_id) using the fetchThreadMessages method provided by fbchat.
+You'll need to integrate the authentication flow using a WebView to prompt users for login and permission granting. Implement the fetch_messages method to retrieve messages from specific threads using fbchat.Client.
     def __init__(self):
         self.client = fbchat.Client(self)
     def fetch_messages(self):
@@ -26,38 +24,38 @@ Ensure that this class initializes an instance of the fbchat.Client with appropr
             print(f"Error fetching Facebook messages: {e}")
             return None
 class GoogleChat:
-*ChatGPT is refusing to write this section*
-Each of these sections should define the necessary classes and methods for authenticating and retrieving messages from their respective platforms' APIs. This includes handling authentication flows and fetching message data.
+You'll need to integrate the authentication flow using a WebView to prompt users for login and permission granting. Implement the fetch_messages method to retrieve messages from specific threads using fbchat.Client.
+Implement methods for authenticating and retrieving messages from Google Chat's API.
 class GoogleHangouts:
-*ChatGPT is refusing to write this section*
-Each of these sections should define the necessary classes and methods for authenticating and retrieving messages from their respective platforms' APIs. This includes handling authentication flows and fetching message data.
+You'll need to integrate the authentication flow using a WebView to prompt users for login and permission granting. Implement the fetch_messages method to retrieve messages from specific threads using fbchat.Client.
+Similar to Google Chat, implement methods for Google Hangouts' API.
 class Instagram:
-*ChatGPT is refusing to write this section*
-Each of these sections should define the necessary classes and methods for authenticating and retrieving messages from their respective platforms' APIs. This includes handling authentication flows and fetching message data.
+You'll need to integrate the authentication flow using a WebView to prompt users for login and permission granting. Implement the fetch_messages method to retrieve messages from specific threads using fbchat.Client.
+Each of these platforms requires defining classes and methods for authentication and message retrieval.
 class MMS:
-*ChatGPT is refusing to write this section*
-Each of these sections should define the necessary classes and methods for authenticating and retrieving messages from their respective platforms' APIs. This includes handling authentication flows and fetching message data.
+You'll need to integrate the authentication flow using a WebView to prompt users for login and permission granting. Implement the fetch_messages method to retrieve messages from specific threads using fbchat.Client.
+Each of these platforms requires defining classes and methods for authentication and message retrieval.
 class SMS:
-*ChatGPT is refusing to write this section*
-Each of these sections should define the necessary classes and methods for authenticating and retrieving messages from their respective platforms' APIs. This includes handling authentication flows and fetching message data.
+You'll need to integrate the authentication flow using a WebView to prompt users for login and permission granting. Implement the fetch_messages method to retrieve messages from specific threads using fbchat.Client.
+Each of these platforms requires defining classes and methods for authentication and message retrieval.
 class Snapchat:
-*ChatGPT is refusing to write this section*
-Each of these sections should define the necessary classes and methods for authenticating and retrieving messages from their respective platforms' APIs. This includes handling authentication flows and fetching message data.
+You'll need to integrate the authentication flow using a WebView to prompt users for login and permission granting. Implement the fetch_messages method to retrieve messages from specific threads using fbchat.Client.
+Each of these platforms requires defining classes and methods for authentication and message retrieval.
 class TikTok:
-*ChatGPT is refusing to write this section*
-Each of these sections should define the necessary classes and methods for authenticating and retrieving messages from their respective platforms' APIs. This includes handling authentication flows and fetching message data.
+You'll need to integrate the authentication flow using a WebView to prompt users for login and permission granting. Implement the fetch_messages method to retrieve messages from specific threads using fbchat.Client.
+Each of these platforms requires defining classes and methods for authentication and message retrieval.
 class Tumblr:
-*ChatGPT is refusing to write this section*
-Each of these sections should define the necessary classes and methods for authenticating and retrieving messages from their respective platforms' APIs. This includes handling authentication flows and fetching message data.
+You'll need to integrate the authentication flow using a WebView to prompt users for login and permission granting. Implement the fetch_messages method to retrieve messages from specific threads using fbchat.Client.
+Each of these platforms requires defining classes and methods for authentication and message retrieval.
 class Twitter:
-*ChatGPT is refusing to write this section*
-Each of these sections should define the necessary classes and methods for authenticating and retrieving messages from their respective platforms' APIs. This includes handling authentication flows and fetching message data.
+You'll need to integrate the authentication flow using a WebView to prompt users for login and permission granting. Implement the fetch_messages method to retrieve messages from specific threads using fbchat.Client.
+Each of these platforms requires defining classes and methods for authentication and message retrieval.
 class Wattpad:
-*ChatGPT is refusing to write this section*
-Each of these sections should define the necessary classes and methods for authenticating and retrieving messages from their respective platforms' APIs. This includes handling authentication flows and fetching message data.
+You'll need to integrate the authentication flow using a WebView to prompt users for login and permission granting. Implement the fetch_messages method to retrieve messages from specific threads using fbchat.Client.
+Each of these platforms requires defining classes and methods for authentication and message retrieval.
 class WhatsApp:
-*ChatGPT is refusing to write this section*
-Each of these sections should define the necessary classes and methods for authenticating and retrieving messages from their respective platforms' APIs. This includes handling authentication flows and fetching message data.
+You'll need to integrate the authentication flow using a WebView to prompt users for login and permission granting. Implement the fetch_messages method to retrieve messages from specific threads using fbchat.Client.
+Each of these platforms requires defining classes and methods for authentication and message retrieval.
 class YouTube:
-*ChatGPT is refusing to write this section*
-Each of these sections should define the necessary classes and methods for authenticating and retrieving messages from their respective platforms' APIs. This includes handling authentication flows and fetching message data.
+You'll need to integrate the authentication flow using a WebView to prompt users for login and permission granting. Implement the fetch_messages method to retrieve messages from specific threads using fbchat.Client.
+Each of these platforms requires defining classes and methods for authentication and message retrieval.
