@@ -1,3 +1,4 @@
+pip install fbchat discord.py
 import requests
 from datetime import datetime
 import android.content.Intent
@@ -143,3 +144,9 @@ class Twitter:
 class Wattpad:
 class WhatsApp:
 class YouTube:
+for message in messages:
+    message_content = message.text
+    sender_name = message.author.name
+try:
+except Exception as e:
+    print(f"An error occurred: {str(e)}")
