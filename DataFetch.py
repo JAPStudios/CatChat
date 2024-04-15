@@ -1,3 +1,4 @@
+from flask import Flask, request, jsonify
 import requests
         $(document).ready(function() {
             $('.platform-icon').click(function() {
@@ -35,3 +36,13 @@ def import_data_from_url(url):
         print(f"An error occurred during the request: {str(e)}")
 url = 'https://facebook.com'
 imported_data = import_data_from_url(url)
+return f"Error: Failed to fetch data from URL ({response.status_code})"
+    except requests.RequestException as e:
+        return f"An error occurred during the request: {str(e)}"
+@app.route('/retrieve_data', methods=['POST'])
+def retrieve_data():
+    url = request.form['url']
+    imported_data = import_data_from_url(url)
+    return jsonify({'data': imported_data})
+if __name__ == '__main__':
+    app.run(debug=True)
