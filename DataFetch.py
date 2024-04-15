@@ -1,4 +1,26 @@
 import requests
+        $(document).ready(function() {
+            $('.platform-icon').click(function() {
+                var url = $(this).data('url');
+                retrieveData(url);
+            });
+        }
+        function retrieveData(url) {
+            $.ajax({
+                url: '/retrieve_data',
+                method: 'POST',
+                data: { url: url },
+                success: function(response) {
+                    console.log("Data retrieved successfully:", response);
+                },
+                error: function(xhr, status, error) {
+                    console.error("Failed to retrieve data:", error);
+                }
+            });
+        }
+    </script>
+</body>
+</html>
 def import_data_from_url(url):
     try:
         response = requests.get(url)
