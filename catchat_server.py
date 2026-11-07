@@ -240,7 +240,7 @@ def create_app(config: dict | None = None, *, ai_responder=None) -> Flask:
                     "model": model,
                 }).encode("utf-8")
                 session_request = urllib.request.Request(
-                    urljoin(base_url, "api/session"), data=form, method="POST",
+                    urllib.parse.urljoin(base_url, "api/session"), data=form, method="POST",
                     headers={
                         "Authorization": "Bearer " + token,
                         "Content-Type": "application/x-www-form-urlencoded",
@@ -269,7 +269,7 @@ def create_app(config: dict | None = None, *, ai_responder=None) -> Flask:
                 "session": ai_session_id,
             }).encode("utf-8")
             chat_request = urllib.request.Request(
-                urljoin(base_url, "api/chat"), data=chat_payload, method="POST",
+                urllib.parse.urljoin(base_url, "api/chat"), data=chat_payload, method="POST",
                 headers={
                     "Authorization": "Bearer " + token,
                     "Content-Type": "application/json",
