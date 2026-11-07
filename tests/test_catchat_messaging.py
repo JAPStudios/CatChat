@@ -191,21 +191,40 @@ class CatChatMessagingTests(unittest.TestCase):
         self.assertEqual(row[0], "ai-session-123")
 
     def test_unconfigured_agent_leaves_the_human_message_stored(self):
-        created = self.client.post(
+        app = create_app({
+            "TESTING": True,
+            "DATABASE": self.temp.name + "/unconfigured.sqlite3",
+            "AI_BASE_URL": "",
+            "AI_API_TOKEN": "",
+            "AI_ENDPOINT_ID": "",
+            "AI_MODEL": "",
+        })
+        client = app.test_client()
+        client.post("/v1/accounts", json={
+            "username": "erin",
+            "display_name": "Erin",
+            "password": "correct horse battery staple",
+        })
+        login = client.post("/v1/sessions", json={
+            "username": "erin",
+            "password": "correct horse battery staple",
+        })
+        headers = {"Authorization": "Bearer " + login.json["token"]}
+        created = client.post(
             "/v1/conversations/direct",
-            headers=self.alice,
+            headers=headers,
             json={"recipient_username": "astrologically-intelligent"},
         )
         conversation_id = created.json["conversation_id"]
-        sent = self.client.post(
+        sent = client.post(
             f"/v1/conversations/{conversation_id}/messages",
-            headers=self.alice,
+            headers=headers,
             json={"content": "Please respond"},
         )
         self.assertEqual(sent.status_code, 502)
-        history = self.client.get(
+        history = client.get(
             f"/v1/conversations/{conversation_id}/messages",
-            headers=self.alice,
+            headers=headers,
         )
         self.assertEqual(len(history.json["messages"]), 1)
         self.assertEqual(history.json["messages"][0]["content"], "Please respond")
