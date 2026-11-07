@@ -1,0 +1,10 @@
+{
+  "name": "CatChat",
+  "short_name": "CatChat",
+  "description": "Direct and group messaging",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#10161d",
+  "theme_color": "#17202a"
+}
