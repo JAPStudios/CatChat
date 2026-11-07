@@ -179,10 +179,12 @@ def create_app(config: dict | None = None, *, ai_responder=None) -> Flask:
 
     def fetch_messages(conversation_id: str, after_id: int = 0, limit: int = 50):
         return db().execute(
+            "SELECT * FROM ("
             "SELECT m.id, m.conversation_id, m.body, m.created_at, m.reply_to_message_id, "
             "u.username, u.display_name, u.is_bot FROM messages m "
             "JOIN users u ON u.id=m.sender_id "
-            "WHERE m.conversation_id=? AND m.id>? ORDER BY m.id ASC LIMIT ?",
+            "WHERE m.conversation_id=? AND m.id>? ORDER BY m.id DESC LIMIT ?"
+            ") ORDER BY id ASC",
             (conversation_id, after_id, limit),
         ).fetchall()
 
