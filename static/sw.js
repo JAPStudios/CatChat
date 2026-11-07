@@ -1,5 +1,5 @@
-const CACHE_NAME = "catchat-shell-v1";
-const SHELL = ["/", "/static/styles.css", "/static/app.js", "/manifest.webmanifest"];
+const CACHE_NAME = "catchat-shell-v2";
+const SHELL = ["/", "/static/styles.css", "/static/app.js", "/static/icon.svg", "/manifest.webmanifest"];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(SHELL)));
