@@ -109,6 +109,26 @@ class CatChatMessagingTests(unittest.TestCase):
         self.assertEqual(self.agent_calls, [("Research this subject", "catchat_" + conversation_id)])
         self.assertEqual(messages[1]["reply_to_message_id"], messages[0]["id"])
 
+    def test_unconfigured_agent_leaves_the_human_message_stored(self):
+        created = self.client.post(
+            "/v1/conversations/direct",
+            headers=self.alice,
+            json={"recipient_username": "astrologically-intelligent"},
+        )
+        conversation_id = created.json["conversation_id"]
+        sent = self.client.post(
+            f"/v1/conversations/{conversation_id}/messages",
+            headers=self.alice,
+            json={"content": "Please respond"},
+        )
+        self.assertEqual(sent.status_code, 502)
+        history = self.client.get(
+            f"/v1/conversations/{conversation_id}/messages",
+            headers=self.alice,
+        )
+        self.assertEqual(len(history.json["messages"]), 1)
+        self.assertEqual(history.json["messages"][0]["content"], "Please respond")
+
     def test_read_receipts_update_for_members(self):
         created = self.client.post(
             "/v1/conversations/direct",
