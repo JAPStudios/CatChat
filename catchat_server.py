@@ -65,6 +65,7 @@ def _initialize(path: str, bot_username: str) -> None:
             kind TEXT NOT NULL CHECK(kind IN ('direct', 'group')),
             name TEXT,
             direct_key TEXT UNIQUE,
+            agent_session_id TEXT,
             created_at REAL NOT NULL
         );
         CREATE TABLE IF NOT EXISTS participants (
@@ -85,6 +86,9 @@ def _initialize(path: str, bot_username: str) -> None:
         );
         CREATE INDEX IF NOT EXISTS messages_conversation ON messages(conversation_id, id);
         """)
+        columns = {row["name"] for row in db.execute("PRAGMA table_info(conversations)").fetchall()}
+        if "agent_session_id" not in columns:
+            db.execute("ALTER TABLE conversations ADD COLUMN agent_session_id TEXT")
         existing = db.execute(
             "SELECT id FROM users WHERE username=? COLLATE NOCASE", (bot_username,)
         ).fetchone()
@@ -101,8 +105,10 @@ def create_app(config: dict | None = None, *, ai_responder=None) -> Flask:
     app.config.update(
         DATABASE=os.getenv("CATCHAT_DATABASE", "data/catchat.sqlite3"),
         AI_USERNAME=os.getenv("CATCHAT_AI_USERNAME", "astrologically-intelligent"),
-        AI_CHAT_URL=os.getenv("ASTRO_AI_CHAT_URL", ""),
+        AI_BASE_URL=os.getenv("ASTRO_AI_BASE_URL", ""),
         AI_API_TOKEN=os.getenv("ASTRO_AI_API_TOKEN", ""),
+        AI_ENDPOINT_ID=os.getenv("ASTRO_AI_ENDPOINT_ID", ""),
+        AI_MODEL=os.getenv("ASTRO_AI_MODEL", ""),
         SSE_SECONDS=20,
         MAX_CONTENT_LENGTH=64 * 1024,
     )
