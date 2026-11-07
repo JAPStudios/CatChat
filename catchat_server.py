@@ -19,7 +19,7 @@ import uuid
 from functools import wraps
 from pathlib import Path
 
-from flask import Flask, Response, g, jsonify, request, stream_with_context
+from flask import Flask, Response, g, jsonify, request, send_from_directory, stream_with_context
 from werkzeug.security import check_password_hash, generate_password_hash
 
 _USERNAME = re.compile(r"^[A-Za-z0-9_.-]{3,32}$")
@@ -101,7 +101,7 @@ def _initialize(path: str, bot_username: str) -> None:
 
 
 def create_app(config: dict | None = None, *, ai_responder=None) -> Flask:
-    app = Flask(__name__)
+    app = Flask(__name__, static_folder="static", static_url_path="/static")
     app.config.update(
         DATABASE=os.getenv("CATCHAT_DATABASE", "data/catchat.sqlite3"),
         AI_USERNAME=os.getenv("CATCHAT_AI_USERNAME", "astrologically-intelligent"),
@@ -302,9 +302,36 @@ def create_app(config: dict | None = None, *, ai_responder=None) -> Flask:
         db().commit()
         return message_json(row)
 
+    @app.get("/")
+    def index():
+        return app.send_static_file("index.html")
+
+    @app.get("/manifest.webmanifest")
+    def manifest():
+        return send_from_directory(app.static_folder, "manifest.webmanifest", mimetype="application/manifest+json")
+
+    @app.get("/sw.js")
+    def service_worker():
+        response = send_from_directory(app.static_folder, "sw.js", mimetype="application/javascript")
+        response.headers["Cache-Control"] = "no-cache"
+        return response
+
     @app.get("/healthz")
     def health():
         return jsonify(status="ok", service="catchat")
+
+    @app.after_request
+    def security_headers(response):
+        response.headers.setdefault("X-Content-Type-Options", "nosniff")
+        response.headers.setdefault("Referrer-Policy", "no-referrer")
+        response.headers.setdefault("X-Frame-Options", "DENY")
+        response.headers.setdefault(
+            "Content-Security-Policy",
+            "default-src 'self'; script-src 'self'; style-src 'self'; "
+            "connect-src 'self'; img-src 'self' data:; object-src 'none'; "
+            "base-uri 'self'; frame-ancestors 'none'",
+        )
+        return response
 
     @app.post("/v1/accounts")
     def register():
