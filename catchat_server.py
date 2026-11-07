@@ -19,7 +19,7 @@ import uuid
 from functools import wraps
 from pathlib import Path
 
-from flask import Flask, Response, g, jsonify, request, stream_with_context
+from flask import Flask, Response, g, jsonify, request, send_from_directory, stream_with_context
 from werkzeug.security import check_password_hash, generate_password_hash
 
 _USERNAME = re.compile(r"^[A-Za-z0-9_.-]{3,32}$")
@@ -101,7 +101,7 @@ def _initialize(path: str, bot_username: str) -> None:
 
 
 def create_app(config: dict | None = None, *, ai_responder=None) -> Flask:
-    app = Flask(__name__)
+    app = Flask(__name__, static_folder="static", static_url_path="/static")
     app.config.update(
         DATABASE=os.getenv("CATCHAT_DATABASE", "data/catchat.sqlite3"),
         AI_USERNAME=os.getenv("CATCHAT_AI_USERNAME", "astrologically-intelligent"),
@@ -179,10 +179,12 @@ def create_app(config: dict | None = None, *, ai_responder=None) -> Flask:
 
     def fetch_messages(conversation_id: str, after_id: int = 0, limit: int = 50):
         return db().execute(
+            "SELECT * FROM ("
             "SELECT m.id, m.conversation_id, m.body, m.created_at, m.reply_to_message_id, "
             "u.username, u.display_name, u.is_bot FROM messages m "
             "JOIN users u ON u.id=m.sender_id "
-            "WHERE m.conversation_id=? AND m.id>? ORDER BY m.id ASC LIMIT ?",
+            "WHERE m.conversation_id=? AND m.id>? ORDER BY m.id DESC LIMIT ?"
+            ") ORDER BY id ASC",
             (conversation_id, after_id, limit),
         ).fetchall()
 
@@ -302,9 +304,36 @@ def create_app(config: dict | None = None, *, ai_responder=None) -> Flask:
         db().commit()
         return message_json(row)
 
+    @app.get("/")
+    def index():
+        return app.send_static_file("index.html")
+
+    @app.get("/manifest.webmanifest")
+    def manifest():
+        return send_from_directory(app.static_folder, "manifest.webmanifest", mimetype="application/manifest+json")
+
+    @app.get("/sw.js")
+    def service_worker():
+        response = send_from_directory(app.static_folder, "sw.js", mimetype="application/javascript")
+        response.headers["Cache-Control"] = "no-cache"
+        return response
+
     @app.get("/healthz")
     def health():
         return jsonify(status="ok", service="catchat")
+
+    @app.after_request
+    def security_headers(response):
+        response.headers.setdefault("X-Content-Type-Options", "nosniff")
+        response.headers.setdefault("Referrer-Policy", "no-referrer")
+        response.headers.setdefault("X-Frame-Options", "DENY")
+        response.headers.setdefault(
+            "Content-Security-Policy",
+            "default-src 'self'; script-src 'self'; style-src 'self'; "
+            "connect-src 'self'; img-src 'self' data:; object-src 'none'; "
+            "base-uri 'self'; frame-ancestors 'none'",
+        )
+        return response
 
     @app.post("/v1/accounts")
     def register():
@@ -441,7 +470,13 @@ def create_app(config: dict | None = None, *, ai_responder=None) -> Flask:
         rows = db().execute(
             "SELECT c.id, c.kind, c.name, c.created_at, "
             "(SELECT m.body FROM messages m WHERE m.conversation_id=c.id ORDER BY m.id DESC LIMIT 1) AS last_message, "
-            "(SELECT m.created_at FROM messages m WHERE m.conversation_id=c.id ORDER BY m.id DESC LIMIT 1) AS last_message_at "
+            "(SELECT m.created_at FROM messages m WHERE m.conversation_id=c.id ORDER BY m.id DESC LIMIT 1) AS last_message_at, "
+            "(SELECT u.username FROM participants p2 JOIN users u ON u.id=p2.user_id "
+            "WHERE p2.conversation_id=c.id AND p2.user_id<>p.user_id LIMIT 1) AS peer_username, "
+            "(SELECT u.display_name FROM participants p2 JOIN users u ON u.id=p2.user_id "
+            "WHERE p2.conversation_id=c.id AND p2.user_id<>p.user_id LIMIT 1) AS peer_display_name, "
+            "(SELECT COUNT(*) FROM messages m WHERE m.conversation_id=c.id "
+            "AND m.id>COALESCE(p.last_read_message_id,0) AND m.sender_id<>p.user_id) AS unread_count "
             "FROM conversations c JOIN participants p ON p.conversation_id=c.id "
             "WHERE p.user_id=? ORDER BY COALESCE(last_message_at, c.created_at) DESC",
             (g.user["id"],),

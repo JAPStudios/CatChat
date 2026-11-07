@@ -15,6 +15,8 @@ python catchat_server.py
 
 The service listens on `127.0.0.1:7800` by default. Set `CATCHAT_HOST`, `CATCHAT_PORT` and `CATCHAT_DATABASE` to configure the listener and SQLite database. Keep the listener on loopback or behind an HTTPS reverse proxy.
 
+Open `http://127.0.0.1:7800/` to use the responsive CatChat web client. It supports account creation, sign-in, one-to-one conversations, group conversations, message history and live message refresh. The web client can be installed as a PWA; its service worker caches only the application shell and never caches authenticated API responses. The bearer token stays in page memory and is cleared when the page is closed or the user signs out.
+
 ## Accounts and authentication
 
 Create an account:
