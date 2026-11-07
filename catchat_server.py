@@ -468,7 +468,13 @@ def create_app(config: dict | None = None, *, ai_responder=None) -> Flask:
         rows = db().execute(
             "SELECT c.id, c.kind, c.name, c.created_at, "
             "(SELECT m.body FROM messages m WHERE m.conversation_id=c.id ORDER BY m.id DESC LIMIT 1) AS last_message, "
-            "(SELECT m.created_at FROM messages m WHERE m.conversation_id=c.id ORDER BY m.id DESC LIMIT 1) AS last_message_at "
+            "(SELECT m.created_at FROM messages m WHERE m.conversation_id=c.id ORDER BY m.id DESC LIMIT 1) AS last_message_at, "
+            "(SELECT u.username FROM participants p2 JOIN users u ON u.id=p2.user_id "
+            "WHERE p2.conversation_id=c.id AND p2.user_id<>p.user_id LIMIT 1) AS peer_username, "
+            "(SELECT u.display_name FROM participants p2 JOIN users u ON u.id=p2.user_id "
+            "WHERE p2.conversation_id=c.id AND p2.user_id<>p.user_id LIMIT 1) AS peer_display_name, "
+            "(SELECT COUNT(*) FROM messages m WHERE m.conversation_id=c.id "
+            "AND m.id>COALESCE(p.last_read_message_id,0) AND m.sender_id<>p.user_id) AS unread_count "
             "FROM conversations c JOIN participants p ON p.conversation_id=c.id "
             "WHERE p.user_id=? ORDER BY COALESCE(last_message_at, c.created_at) DESC",
             (g.user["id"],),
