@@ -233,7 +233,10 @@ def create_app(config: dict | None = None, *, ai_responder=None) -> Flask:
                 with urllib.request.urlopen(req, timeout=120) as response:
                     if response.status < 200 or response.status >= 300:
                         raise RuntimeError("Astrologically Intelligent returned an unsuccessful response.")
-                    result = json.loads(response.read(1_000_001))
+                    raw_result = response.read(1_000_001)
+                    if len(raw_result) > 1_000_000:
+                        raise RuntimeError("Astrologically Intelligent response exceeded the 1 MB limit.")
+                    result = json.loads(raw_result)
             except (urllib.error.URLError, TimeoutError, ValueError) as exc:
                 raise RuntimeError("Astrologically Intelligent could not complete the direct message.") from exc
             answer = result.get("response") if isinstance(result, dict) else None
@@ -374,10 +377,6 @@ def create_app(config: dict | None = None, *, ai_responder=None) -> Flask:
         db().execute(
             "INSERT INTO conversations(id, kind, name, created_at) VALUES (?, 'group', ?, ?)",
             (conversation_id, name, now),
-        )
-        db().executemany(
-            "INSERT INTO participants(conversation_id, user_id, joined_at) VALUES (?, ?, ?)",
-            [(user["id"],) for user in []],
         )
         db().executemany(
             "INSERT INTO participants(conversation_id, user_id, joined_at) VALUES (?, ?, ?)",
