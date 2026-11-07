@@ -109,6 +109,87 @@ class CatChatMessagingTests(unittest.TestCase):
         self.assertEqual(self.agent_calls, [("Research this subject", "catchat_" + conversation_id)])
         self.assertEqual(messages[1]["reply_to_message_id"], messages[0]["id"])
 
+    def test_agent_uses_full_application_session_and_chat_routes(self):
+        database = self.temp.name + "/full-app.sqlite3"
+        app = create_app(
+            {
+                "TESTING": True,
+                "DATABASE": database,
+                "AI_BASE_URL": "https://astro.example",
+                "AI_API_TOKEN": "secret-token",
+                "AI_ENDPOINT_ID": "endpoint-123",
+                "AI_MODEL": "model-abc",
+            }
+        )
+        client = app.test_client()
+        created = client.post("/v1/accounts", json={
+            "username": "dana",
+            "display_name": "Dana",
+            "password": "correct horse battery staple",
+        })
+        self.assertEqual(created.status_code, 201)
+        login = client.post("/v1/sessions", json={
+            "username": "dana",
+            "password": "correct horse battery staple",
+        })
+        headers = {"Authorization": "Bearer " + login.json["token"]}
+        conversation = client.post(
+            "/v1/conversations/direct",
+            headers=headers,
+            json={"recipient_username": "astrologically-intelligent"},
+        )
+        conversation_id = conversation.json["conversation_id"]
+        calls = []
+
+        class FakeResponse:
+            status = 200
+
+            def __init__(self, payload):
+                self.payload = json.dumps(payload).encode("utf-8")
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *_args):
+                return False
+
+            def read(self, limit=-1):
+                return self.payload if limit < 0 else self.payload[:limit]
+
+        def fake_urlopen(req, timeout):
+            calls.append((req.full_url, req.get_method(), req.get_header("Authorization"), req.data, timeout))
+            if req.full_url == "https://astro.example/api/session":
+                form = parse_qs(req.data.decode("utf-8"))
+                self.assertEqual(form["endpoint_id"], ["endpoint-123"])
+                self.assertEqual(form["model"], ["model-abc"])
+                return FakeResponse({"id": "ai-session-123"})
+            if req.full_url == "https://astro.example/api/chat":
+                body = json.loads(req.data)
+                self.assertEqual(body, {"message": "Hello from CatChat", "session": "ai-session-123"})
+                return FakeResponse({"response": "Reply from the full application"})
+            raise AssertionError("Unexpected Astrologically Intelligent URL: " + req.full_url)
+
+        with patch("catchat_server.urllib.request.urlopen", side_effect=fake_urlopen):
+            sent = client.post(
+                f"/v1/conversations/{conversation_id}/messages",
+                headers=headers,
+                json={"content": "Hello from CatChat"},
+            )
+
+        self.assertEqual(sent.status_code, 201)
+        self.assertEqual([call[0] for call in calls], [
+            "https://astro.example/api/session",
+            "https://astro.example/api/chat",
+        ])
+        self.assertTrue(all(call[2] == "Bearer secret-token" for call in calls))
+        self.assertEqual(sent.json["messages"][1]["content"], "Reply from the full application")
+        with sqlite3.connect(database) as db:
+            row = db.execute(
+                "SELECT agent_session_id FROM conversations WHERE id=?",
+                (conversation_id,),
+            ).fetchone()
+        self.assertEqual(row[0], "ai-session-123")
+
     def test_unconfigured_agent_leaves_the_human_message_stored(self):
         created = self.client.post(
             "/v1/conversations/direct",
