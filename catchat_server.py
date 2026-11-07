@@ -205,24 +205,65 @@ def create_app(config: dict | None = None, *, ai_responder=None) -> Flask:
         if ai_responder is not None:
             answer = ai_responder(source["body"], "catchat_" + conversation_id)
         else:
-            endpoint = str(app.config["AI_CHAT_URL"] or "").strip()
+            base_url = str(app.config["AI_BASE_URL"] or "").strip().rstrip("/") + "/"
             token = str(app.config["AI_API_TOKEN"] or "").strip()
-            parsed = urllib.parse.urlsplit(endpoint)
+            endpoint_id = str(app.config["AI_ENDPOINT_ID"] or "").strip()
+            model = str(app.config["AI_MODEL"] or "").strip()
+            parsed = urllib.parse.urlsplit(base_url)
             if (
-                not endpoint or not token
+                not base_url or not token or not endpoint_id or not model
                 or parsed.scheme not in {"https", "http"}
                 or not parsed.hostname or parsed.username or parsed.password
                 or parsed.query or parsed.fragment
             ):
-                raise RuntimeError("Astrologically Intelligent direct-message service is not configured.")
+                raise RuntimeError(
+                    "Astrologically Intelligent is not configured. Set ASTRO_AI_BASE_URL, "
+                    "ASTRO_AI_API_TOKEN, ASTRO_AI_ENDPOINT_ID and ASTRO_AI_MODEL."
+                )
             if parsed.scheme != "https" and parsed.hostname not in {"localhost", "127.0.0.1", "::1"}:
-                raise RuntimeError("ASTRO_AI_CHAT_URL must use HTTPS outside loopback.")
-            payload = json.dumps({
+                raise RuntimeError("ASTRO_AI_BASE_URL must use HTTPS outside loopback.")
+
+            session_row = db().execute(
+                "SELECT agent_session_id FROM conversations WHERE id=?", (conversation_id,)
+            ).fetchone()
+            ai_session_id = session_row["agent_session_id"] if session_row else None
+            if not ai_session_id:
+                form = urllib.parse.urlencode({
+                    "name": "CatChat " + conversation_id[:8],
+                    "endpoint_id": endpoint_id,
+                    "model": model,
+                }).encode("utf-8")
+                session_request = urllib.request.Request(
+                    urljoin(base_url, "api/session"), data=form, method="POST",
+                    headers={
+                        "Authorization": "Bearer " + token,
+                        "Content-Type": "application/x-www-form-urlencoded",
+                        "Accept": "application/json",
+                    },
+                )
+                try:
+                    with urllib.request.urlopen(session_request, timeout=30) as response:
+                        raw_session = response.read(100_001)
+                        if len(raw_session) > 100_000:
+                            raise RuntimeError("Astrologically Intelligent session response exceeded its limit.")
+                        session_payload = json.loads(raw_session)
+                except (urllib.error.URLError, TimeoutError, ValueError) as exc:
+                    raise RuntimeError("Could not create the Astrologically Intelligent conversation session.") from exc
+                ai_session_id = session_payload.get("id") if isinstance(session_payload, dict) else None
+                if not isinstance(ai_session_id, str) or not ai_session_id:
+                    raise RuntimeError("Astrologically Intelligent did not return a session identifier.")
+                db().execute(
+                    "UPDATE conversations SET agent_session_id=? WHERE id=?",
+                    (ai_session_id, conversation_id),
+                )
+                db().commit()
+
+            chat_payload = json.dumps({
                 "message": source["body"],
-                "session_id": "catchat_" + conversation_id,
+                "session": ai_session_id,
             }).encode("utf-8")
-            req = urllib.request.Request(
-                endpoint, data=payload, method="POST",
+            chat_request = urllib.request.Request(
+                urljoin(base_url, "api/chat"), data=chat_payload, method="POST",
                 headers={
                     "Authorization": "Bearer " + token,
                     "Content-Type": "application/json",
@@ -230,9 +271,7 @@ def create_app(config: dict | None = None, *, ai_responder=None) -> Flask:
                 },
             )
             try:
-                with urllib.request.urlopen(req, timeout=120) as response:
-                    if response.status < 200 or response.status >= 300:
-                        raise RuntimeError("Astrologically Intelligent returned an unsuccessful response.")
+                with urllib.request.urlopen(chat_request, timeout=180) as response:
                     raw_result = response.read(1_000_001)
                     if len(raw_result) > 1_000_000:
                         raise RuntimeError("Astrologically Intelligent response exceeded the 1 MB limit.")
