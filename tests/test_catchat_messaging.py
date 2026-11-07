@@ -1,5 +1,9 @@
+import json
+import sqlite3
 import tempfile
 import unittest
+from urllib.parse import parse_qs
+from unittest.mock import patch
 
 from catchat_server import create_app
 
@@ -119,6 +123,7 @@ class CatChatMessagingTests(unittest.TestCase):
                 "AI_API_TOKEN": "secret-token",
                 "AI_ENDPOINT_ID": "endpoint-123",
                 "AI_MODEL": "model-abc",
+                "AI_USERNAME": "astrologically-intelligent",
             }
         )
         client = app.test_client()
@@ -194,6 +199,7 @@ class CatChatMessagingTests(unittest.TestCase):
         app = create_app({
             "TESTING": True,
             "DATABASE": self.temp.name + "/unconfigured.sqlite3",
+            "AI_USERNAME": "astrologically-intelligent",
             "AI_BASE_URL": "",
             "AI_API_TOKEN": "",
             "AI_ENDPOINT_ID": "",
