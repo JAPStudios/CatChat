@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#17202a">
+  <meta name="description" content="CatChat direct and group messaging.">
+  <title>CatChat</title>
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="stylesheet" href="/static/styles.css">
+  <script src="/static/app.js" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/" aria-label="CatChat home">CatChat</a>
+    <div id="accountBar" class="account-bar" hidden>
+      <span id="accountName" class="account-name"></span>
+      <button id="logoutButton" class="button button-quiet" type="button">Sign out</button>
+    </div>
+  </header>
+
+  <main class="page">
+    <section id="authView" class="auth-card" aria-labelledby="authTitle">
+      <div class="eyebrow">Private conversations</div>
+      <h1 id="authTitle">Sign in to CatChat</h1>
+      <p class="muted">Send direct messages, create group conversations and message Astrologically Intelligent.</p>
+
+      <form id="loginForm" class="stack">
+        <label for="loginUsername">Username</label>
+        <input id="loginUsername" name="username" autocomplete="username" required minlength="3" maxlength="32">
+        <label for="loginPassword">Password</label>
+        <input id="loginPassword" name="password" type="password" autocomplete="current-password" required minlength="12" maxlength="256">
+        <button class="button button-primary" type="submit">Sign in</button>
+      </form>
+
+      <form id="registerForm" class="stack" hidden>
+        <label for="registerUsername">Username</label>
+        <input id="registerUsername" name="username" autocomplete="username" required minlength="3" maxlength="32" pattern="[A-Za-z0-9_.-]+">
+        <label for="registerDisplayName">Display name</label>
+        <input id="registerDisplayName" name="display_name" autocomplete="nickname" maxlength="80">
+        <label for="registerPassword">Password</label>
+        <input id="registerPassword" name="password" type="password" autocomplete="new-password" required minlength="12" maxlength="256">
+        <button class="button button-primary" type="submit">Create account</button>
+      </form>
+
+      <button id="toggleAuthButton" class="text-button" type="button">Create a CatChat account</button>
+    </section>
+
+    <section id="chatView" class="chat-layout" hidden>
+      <aside class="sidebar" aria-label="Conversations">
+        <div class="sidebar-heading">
+          <div>
+            <div class="eyebrow">Messages</div>
+            <h2>Conversations</h2>
+          </div>
+          <div class="sidebar-actions">
+            <button id="newDirectButton" class="icon-button" type="button" aria-label="New direct conversation" title="New direct conversation">+</button>
+            <button id="newGroupButton" class="icon-button" type="button" aria-label="New group conversation" title="New group conversation">G</button>
+          </div>
+        </div>
+        <ul id="conversationList" class="conversation-list"></ul>
+        <p id="emptyConversations" class="empty-note">No conversations yet. Start a direct message or create a group.</p>
+      </aside>
+
+      <section class="chat-panel" aria-label="Message conversation">
+        <div id="emptyState" class="empty-state">
+          <div class="empty-symbol">C</div>
+          <h2>Select a conversation</h2>
+          <p class="muted">Messages and replies will appear here.</p>
+        </div>
+
+        <div id="conversationView" class="conversation-view" hidden>
+          <header class="conversation-header">
+            <div>
+              <div id="conversationKind" class="eyebrow"></div>
+              <h2 id="conversationTitle"></h2>
+            </div>
+            <button id="refreshButton" class="button button-quiet" type="button">Refresh</button>
+          </header>
+          <ol id="messages" class="messages" aria-live="polite" aria-relevant="additions"></ol>
+          <form id="messageForm" class="composer">
+            <label class="visually-hidden" for="messageInput">Message</label>
+            <textarea id="messageInput" rows="2" maxlength="4000" placeholder="Write a message…" required></textarea>
+            <button id="sendButton" class="button button-primary" type="submit">Send</button>
+          </form>
+          <p class="composer-note">Messages are limited to 4,000 characters.</p>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <dialog id="directDialog" class="dialog">
+    <form id="directForm" class="stack">
+      <div class="dialog-heading">
+        <h2>New direct conversation</h2>
+        <button class="icon-button dialog-close" type="button" data-close="directDialog" aria-label="Close">×</button>
+      </div>
+      <label for="recipientUsername">Recipient username</label>
+      <input id="recipientUsername" name="recipient_username" required minlength="3" maxlength="32" autocomplete="off">
+      <p class="muted small">Enter <code>astrologically-intelligent</code> to message the assistant.</p>
+      <button class="button button-primary" type="submit">Create conversation</button>
+    </form>
+  </dialog>
+
+  <dialog id="groupDialog" class="dialog">
+    <form id="groupForm" class="stack">
+      <div class="dialog-heading">
+        <h2>New group conversation</h2>
+        <button class="icon-button dialog-close" type="button" data-close="groupDialog" aria-label="Close">×</button>
+      </div>
+      <label for="groupName">Group name</label>
+      <input id="groupName" name="name" required maxlength="80">
+      <label for="groupParticipants">Participant usernames</label>
+      <input id="groupParticipants" name="participants" required placeholder="alice, bob">
+      <p class="muted small">Separate usernames with commas. The signed-in account is added automatically.</p>
+      <button class="button button-primary" type="submit">Create group</button>
+    </form>
+  </dialog>
+
+  <div id="statusMessage" class="status-message" role="status" aria-live="polite"></div>
+</body>
+</html>
