@@ -58,14 +58,18 @@ Conversation membership is checked for every read, send and event request. Messa
 
 CatChat reserves the username `astrologically-intelligent` for the assistant account. Creating a direct conversation with that account enables the AI reply path. Configure:
 
-- `ASTRO_AI_CHAT_URL`: the full HTTPS URL for Astrologically Intelligent's authenticated `/v1/chat` endpoint.
-- `ASTRO_AI_API_TOKEN`: the bearer token accepted by that endpoint.
+- `ASTRO_AI_BASE_URL`: the HTTPS base URL of the full Astrologically Intelligent web service.
+- `ASTRO_AI_API_TOKEN`: an API token with the `chat` scope.
+- `ASTRO_AI_ENDPOINT_ID`: a model endpoint registered and available to that token's owner.
+- `ASTRO_AI_MODEL`: a chat model available through that endpoint.
 - `CATCHAT_AI_USERNAME`: optional assistant username override; defaults to `astrologically-intelligent`.
 
-Each CatChat conversation receives a stable, separate Astrologically Intelligent session identifier. Human messages are stored in CatChat and the assistant response is stored as a message from the assistant account. If the AI endpoint is unavailable, the original human message remains stored and the API returns an error rather than discarding it.
+CatChat creates one persistent Astrologically Intelligent session for each CatChat conversation through `POST /api/session` and sends messages through `POST /api/chat`. The same configured model endpoint is used for all CatChat conversations. The API token owner must be authorized to use the selected model endpoint. Each CatChat conversation has its own AI session, so its history is isolated from other conversations.
 
-For local development, the AI endpoint may use loopback HTTP. Non-loopback AI endpoints must use HTTPS.
+Human messages are stored in CatChat and the assistant response is stored as a normal message from the assistant account. If the AI service is unavailable, the original human message remains stored and the API returns an error rather than discarding it.
 
+For local development, the AI base URL may use loopback HTTP. Non-loopback AI endpoints must use HTTPS.
+ 
 ## Tests
 
 Run:
