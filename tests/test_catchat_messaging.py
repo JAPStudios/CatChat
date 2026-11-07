@@ -279,5 +279,34 @@ class CatChatMessagingTests(unittest.TestCase):
         self.assertEqual(rejected.status_code, 400)
 
 
+    def test_web_client_and_pwa_assets_are_served_with_security_headers(self):
+        home = self.client.get("/")
+        self.assertEqual(home.status_code, 200)
+        self.assertIn(b"CatChat", home.data)
+        self.assertIn("default-src 'self'", home.headers.get("Content-Security-Policy", ""))
+        self.assertEqual(self.client.get("/static/app.js").status_code, 200)
+        self.assertEqual(self.client.get("/static/styles.css").status_code, 200)
+        self.assertEqual(self.client.get("/manifest.webmanifest").status_code, 200)
+        self.assertEqual(self.client.get("/sw.js").status_code, 200)
+
+    def test_conversation_list_includes_peer_identity_and_unread_count(self):
+        created = self.client.post(
+            "/v1/conversations/direct",
+            headers=self.alice,
+            json={"recipient_username": "bob"},
+        )
+        conversation_id = created.json["conversation_id"]
+        self.client.post(
+            f"/v1/conversations/{conversation_id}/messages",
+            headers=self.alice,
+            json={"content": "Unread for Bob"},
+        )
+        listed = self.client.get("/v1/conversations", headers=self.bob)
+        self.assertEqual(listed.status_code, 200)
+        conversation = listed.json["conversations"][0]
+        self.assertEqual(conversation["peer_username"], "alice")
+        self.assertEqual(conversation["peer_display_name"], "Alice")
+        self.assertEqual(conversation["unread_count"], 1)
+
 if __name__ == "__main__":
     unittest.main()
