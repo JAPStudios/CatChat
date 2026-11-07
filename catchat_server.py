@@ -324,7 +324,9 @@ def create_app(config: dict | None = None, *, ai_responder=None) -> Flask:
     @require_auth
     def create_direct():
         payload = request.get_json(silent=True)
-        recipient_name = str((payload or {}).get("recipient_username") or "").strip()
+        if not isinstance(payload, dict):
+            return jsonify(error="invalid_json"), 400
+        recipient_name = str(payload.get("recipient_username") or "").strip()
         recipient = db().execute(
             "SELECT id, username FROM users WHERE username=? COLLATE NOCASE", (recipient_name,)
         ).fetchone()
@@ -360,9 +362,12 @@ def create_app(config: dict | None = None, *, ai_responder=None) -> Flask:
         usernames = payload.get("participants")
         if not name or len(name) > 80 or not isinstance(usernames, list) or not 1 <= len(usernames) <= 49:
             return jsonify(error="invalid_group"), 400
-        names = list(dict.fromkeys([g.user["username"], *[
-            str(item).strip() for item in usernames if isinstance(item, str) and item.strip()
-        ]]))
+        names_by_key = {g.user["username"].casefold(): g.user["username"]}
+        for item in usernames:
+            if isinstance(item, str) and item.strip():
+                cleaned = item.strip()
+                names_by_key.setdefault(cleaned.casefold(), cleaned)
+        names = list(names_by_key.values())
         if len(names) < 2 or len(names) > 50:
             return jsonify(error="invalid_group_participants"), 400
         placeholders = ",".join("?" for _ in names)
@@ -452,6 +457,8 @@ def create_app(config: dict | None = None, *, ai_responder=None) -> Flask:
         if not is_member(conversation_id, g.user["id"]):
             return jsonify(error="forbidden"), 403
         payload = request.get_json(silent=True) or {}
+        if not isinstance(payload, dict):
+            return jsonify(error="invalid_json"), 400
         message_id = payload.get("message_id")
         if message_id is None:
             row = db().execute(
