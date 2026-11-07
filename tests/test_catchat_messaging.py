@@ -287,6 +287,7 @@ class CatChatMessagingTests(unittest.TestCase):
         self.assertEqual(self.client.get("/static/app.js").status_code, 200)
         self.assertEqual(self.client.get("/static/styles.css").status_code, 200)
         self.assertEqual(self.client.get("/manifest.webmanifest").status_code, 200)
+        self.assertEqual(self.client.get("/static/icon.svg").status_code, 200)
         self.assertEqual(self.client.get("/sw.js").status_code, 200)
 
     def test_conversation_list_includes_peer_identity_and_unread_count(self):
