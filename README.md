@@ -1,52 +1,77 @@
 # CatChat
 
-CatChat is a messaging application designed to connect people across different platforms in one unified interface. It allows users to seamlessly communicate with their contacts, join group chats, and manage their conversations effortlessly.
+CatChat is a direct-messaging service with private one-to-one conversations, group conversations, persistent message history and read receipts. Its HTTP interface is transport-neutral and can be used by web, Android, desktop or other clients.
 
-## Project Overview
+The repository now contains a working Flask service. It does not claim to provide connectors to WhatsApp, Facebook Messenger or other third-party messaging networks. Those require separate supported platform implementations and authorization.
 
-CatChat aims to simplify communication by bringing together conversations from various messaging platforms into one centralized application. Its main purpose is to provide users with a unified messaging experience, regardless of the platforms their contacts are using.
+## Run the service
 
-## Features
+```sh
+python -m venv .venv
+. .venv/bin/activate
+pip install -r requirements.txt
+python catchat_server.py
+```
 
-- **Messaging**: Send and receive messages to and from individual contacts.
-- **Group Chat Support**: Create and participate in group conversations with multiple contacts.
-- **Cross-Platform Integration**: Connect with contacts across different messaging platforms, including Facebook Messenger, WhatsApp, and more.
+The service listens on `127.0.0.1:7800` by default. Set `CATCHAT_HOST`, `CATCHAT_PORT` and `CATCHAT_DATABASE` to configure the listener and SQLite database. Keep the listener on loopback or behind an HTTPS reverse proxy.
 
-## Installation
+## Accounts and authentication
 
-To install CatChat on your device, follow these steps:
+Create an account:
 
-1. Download the CatChat app from the Google Play Store or Apple App Store.
-2. Open the app and follow the on-screen instructions to set up your account.
-3. Once set up, you can start messaging your contacts and joining group chats immediately.
+```http
+POST /v1/accounts
+Content-Type: application/json
 
-## Usage
+{"username":"alice","display_name":"Alice","password":"a-long-unique-password"}
+```
 
-- **Starting New Chats**: Tap on the "New Chat" button to start a new conversation with a contact.
-- **Joining Groups**: Accept invitations to join group chats or create your own groups and invite others to join.
-- **Managing Settings**: Customize your CatChat experience by adjusting settings such as notification preferences and chat themes.
+Passwords must contain at least 12 characters. Log in with `POST /v1/sessions` using the same username and password. The response contains a random bearer token. Send it as `Authorization: Bearer <token>` on authenticated requests. Tokens are stored as SHA-256 digests and expire after 30 days. Delete the current session with `DELETE /v1/sessions`.
 
-## Contributing
+## Direct and group conversations
 
-We welcome contributions from the community to help improve CatChat. If you encounter any issues or have suggestions for new features, please report them on our issue tracker.
+Create a direct conversation:
 
-To contribute code, follow these guidelines:
+```http
+POST /v1/conversations/direct
+Authorization: Bearer <token>
+Content-Type: application/json
 
-1. Fork the CatChat repository on GitHub.
-2. Create a new branch for your changes.
-3. Make your changes and submit a pull request.
-4. Ensure your code follows our coding standards and include tests if applicable.
+{"recipient_username":"bob"}
+```
 
-## License
+Create a group conversation:
 
-CatChat is licensed under the MIT License. See the LICENSE file for more details.
+```http
+POST /v1/conversations/group
+Authorization: Bearer <token>
+Content-Type: application/json
 
-## Contact
+{"name":"Project room","participants":["bob","charlie"]}
+```
 
-For questions, feedback, or collaboration opportunities, you can reach out to the project maintainers at [contact@catchat.com](mailto:contact@catchat.com).
+List conversations with `GET /v1/conversations`. Send a message with `POST /v1/conversations/{conversation_id}/messages` and body `{"content":"Message text"}`. Retrieve history with `GET /v1/conversations/{conversation_id}/messages?after_id=0&limit=50`. Mark a message as read with `POST /v1/conversations/{conversation_id}/read` and body `{"message_id":123}`. Subscribe to a bounded server-sent event stream with `GET /v1/conversations/{conversation_id}/events?after_id=123`.
 
-## Acknowledgements
+Conversation membership is checked for every read, send and event request. Message bodies are limited to 4,000 characters. Request bodies are limited to 64 KiB.
 
-We would like to thank the following individuals and organizations for their contributions to the development of CatChat:
+## Astrologically Intelligent direct messages
 
-- [ChatGPT Team](https://github.com/chatgpt): For providing valuable feedback and support during the development process.
+CatChat reserves the username `astrologically-intelligent` for the assistant account. Creating a direct conversation with that account enables the AI reply path. Configure:
+
+- `ASTRO_AI_CHAT_URL`: the full HTTPS URL for Astrologically Intelligent's authenticated `/v1/chat` endpoint.
+- `ASTRO_AI_API_TOKEN`: the bearer token accepted by that endpoint.
+- `CATCHAT_AI_USERNAME`: optional assistant username override; defaults to `astrologically-intelligent`.
+
+Each CatChat conversation receives a stable, separate Astrologically Intelligent session identifier. Human messages are stored in CatChat and the assistant response is stored as a message from the assistant account. If the AI endpoint is unavailable, the original human message remains stored and the API returns an error rather than discarding it.
+
+For local development, the AI endpoint may use loopback HTTP. Non-loopback AI endpoints must use HTTPS.
+
+## Tests
+
+Run:
+
+```sh
+python -m unittest discover -s tests -v
+```
+
+The tests cover account creation, login, direct-message privacy, group membership, read receipts and the assistant conversation path using a mocked responder.
